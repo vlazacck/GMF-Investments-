@@ -1,2 +1,3 @@
 notebooks/TSFAModel.ipynb
 myenv/
+model/sarimax_model.pkl
