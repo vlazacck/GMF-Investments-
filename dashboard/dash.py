@@ -35,9 +35,9 @@ def load_data():
         try:
             # Use raw.githubusercontent.com URLs as a fallback
             urls = {
-                'TSLA': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/data/TSLA_cleaned.csv',
-                'BND': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/data/BND_cleaned.csv',
-                'SPY': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/data/SPY_cleaned.csv'
+                'TSLA': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/portfolio-optimization-enhancements/data/TSLA_cleaned.csv',
+                'BND': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/portfolio-optimization-enhancements/data/BND_cleaned.csv',
+                'SPY': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/portfolio-optimization-enhancements/data/SPY_cleaned.csv'
             }
             data = pd.DataFrame()
             for ticker, url in urls.items():
