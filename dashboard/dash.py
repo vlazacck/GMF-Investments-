@@ -26,25 +26,18 @@ import streamlit as st
 def load_data():
     try:
         assets = ['TSLA', 'BND', 'SPY']
-        data = yf.download(assets, start='2020-01-01', end='2023-01-01')  # Use past end date
+        data = yf.download(assets, start='2020-01-01', end='2023-01-01')
         if data.empty:
-            st.error("No data fetched. Check your internet connection or tickers.")
-            return pd.DataFrame()  # Return empty DataFrame on failure
+            st.error("Failed to fetch data. Check if Yahoo Finance is blocked in your environment.")
+            st.stop()
         if 'Adj Close' in data.columns:
             data = data['Adj Close']
         else:
             data = data['Close']
         return data.pct_change().dropna()
     except Exception as e:
-        st.error(f"Data loading failed: {e}")
-        return pd.DataFrame()  # Return empty DataFrame on exception
-
-returns = load_data()
-
-# Check if returns is valid before proceeding
-if returns.empty:
-    st.error("No valid data. Cannot proceed.")
-    st.stop()
+        st.error(f"Error fetching data: {str(e)}")
+        st.stop()
 # Load Forecast Data
 @st.cache_data
 def load_forecast():
