@@ -18,18 +18,33 @@ DATA_DIR = os.path.dirname(__file__)
 st.set_page_config(layout="wide", page_title="Portfolio Optimization")
 
 # Load Returns Data
+import yfinance as yf
+import pandas as pd
+import streamlit as st
+
 @st.cache_data
 def load_data():
-    assets = ['TSLA', 'BND', 'SPY']
-    data = yf.download(assets, start='2020-01-01', end='2024-01-01')
-    if 'Adj Close' in data.columns:
-        data = data['Adj Close']
-    else:
-        data = data['Close']
-    return data.pct_change().dropna()
+    try:
+        assets = ['TSLA', 'BND', 'SPY']
+        data = yf.download(assets, start='2020-01-01', end='2023-01-01')  # Use past end date
+        if data.empty:
+            st.error("No data fetched. Check your internet connection or tickers.")
+            return pd.DataFrame()  # Return empty DataFrame on failure
+        if 'Adj Close' in data.columns:
+            data = data['Adj Close']
+        else:
+            data = data['Close']
+        return data.pct_change().dropna()
+    except Exception as e:
+        st.error(f"Data loading failed: {e}")
+        return pd.DataFrame()  # Return empty DataFrame on exception
 
 returns = load_data()
 
+# Check if returns is valid before proceeding
+if returns.empty:
+    st.error("No valid data. Cannot proceed.")
+    st.stop()
 # Load Forecast Data
 @st.cache_data
 def load_forecast():
