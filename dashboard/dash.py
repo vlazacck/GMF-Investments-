@@ -18,27 +18,51 @@ DATA_DIR = os.path.dirname(__file__)
 st.set_page_config(layout="wide", page_title="Portfolio Optimization")
 
 # Load Returns Data
-import yfinance as yf
-import pandas as pd
-import streamlit as st
 
 @st.cache_data
 def load_data():
+    # Try Yahoo Finance first
     try:
         assets = ['TSLA', 'BND', 'SPY']
         data = yf.download(assets, start='2020-01-01', end='2023-01-01')
-        if data.empty:
-            st.error("Failed to fetch data. Check if Yahoo Finance is blocked in your environment.")
-            st.stop()
         if 'Adj Close' in data.columns:
             data = data['Adj Close']
         else:
             data = data['Close']
         return data.pct_change().dropna()
-    except Exception as e:
-        st.error(f"Error fetching data: {str(e)}")
-        st.stop()
-# Load Forecast Data
+    except:
+        # Fallback to local CSV files
+        try:
+            # Use raw.githubusercontent.com URLs as a fallback
+            urls = {
+                'TSLA': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/data/TSLA_cleaned.csv',
+                'BND': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/data/BND_cleaned.csv',
+                'SPY': 'https://raw.githubusercontent.com/vlazacck/GMF-Investments-/data/SPY_cleaned.csv'
+            }
+            data = pd.DataFrame()
+            for ticker, url in urls.items():
+                df = pd.read_csv(url, index_col=0, parse_dates=True)
+                # Use 'Close' if 'Adj Close' not present
+                col = 'Adj Close' if 'Adj Close' in df.columns else 'Close'
+                data[ticker] = df[col]
+            return data.pct_change().dropna()
+        except Exception as e:
+            st.error(f"Failed to load data: {e}")
+            return pd.DataFrame()  # Return empty DF on total failure
+        
+        # Initialize returns with an empty DataFrame
+returns = pd.DataFrame()
+
+try:
+    returns = load_data()
+except Exception as e:
+    st.error(f"Critical error: {e}")
+
+# Validate data before proceeding
+if returns.empty:
+    st.error("No valid data. Check your files and network.")
+    st.stop()
+
 @st.cache_data
 def load_forecast():
     forecast_path = os.path.join(DATA_DIR, 'tsla_forecast_12m.csv')
