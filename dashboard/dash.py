@@ -76,10 +76,23 @@ tsla_forecast = load_forecast()
 
 # Define CVaR Calculation
 def calculate_cvar(returns, weights, alpha=0.05):
-    portfolio_returns = returns @ weights
-    var_threshold = np.percentile(portfolio_returns, 100 * alpha)
-    cvar = portfolio_returns[portfolio_returns <= var_threshold].mean()
-    return -cvar
+    portfolio_returns = returns.dot(weights)
+    var_threshold = np.percentile(portfolio_returns, 100 * alpha)  # Value at Risk (VaR)
+
+    # Select returns below VaR for CVaR calculation
+    cvar_values = portfolio_returns[portfolio_returns <= var_threshold]
+
+    # If no losses, return 0 (this might be why you're seeing a positive CVaR)
+    if len(cvar_values) == 0:
+        return 0
+
+    cvar = cvar_values.mean()
+    print(f"Portfolio Returns:\n{portfolio_returns}")
+    print(f"VaR Threshold: {var_threshold}")
+    print(f"CVaR: {cvar}")
+    
+    return cvar
+
 
 # Objective Function
 def objective_function(weights, returns, lambda_cvar):

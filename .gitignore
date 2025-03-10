@@ -1,3 +1,4 @@
 
 myenv/
 model/sarimax_model.pkl
+mlruns/
