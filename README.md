@@ -3,6 +3,9 @@
 ## 📌 Project Overview
 GMF Investments is a data-driven financial analysis project focused on Tesla (TSLA) stock. It includes time series forecasting, risk analysis, and portfolio optimization to guide investment decisions.
 
+**🚀 Deployed Dashboard:** [https://gmfinvest.streamlit.app/](https://gmfinvest.streamlit.app/)
+
+
 ## 📊 Project Workflow
 The project follows a structured workflow:
 
